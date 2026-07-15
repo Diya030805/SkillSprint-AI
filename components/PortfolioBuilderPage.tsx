@@ -224,7 +224,7 @@ export default function PortfolioBuilderPage() {
 
             {/* Mockup footer */}
             <p className="text-[8px] text-zinc-500 text-center mt-12 border-t pt-3 border-zinc-900/40 font-mono">
-              Hosted live on SkillSprint Cloud Spaces
+              Hosted live on SprintSkill Cloud Spaces
             </p>
           </div>
         </div>

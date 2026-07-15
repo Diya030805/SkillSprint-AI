@@ -9,8 +9,8 @@ export default function ProfilePage() {
   const [skills, setSkills] = useState(["React Server Components", "TypeScript Types", "PostgreSQL", "Next.js 15"]);
 
   const certificates = [
-    { title: "Personalized Roadmap: Full-Stack Architect", issuer: "SkillSprint AI Board", date: "June 2026", hash: "SSA-9482-AD3" },
-    { title: "HTML Semantic & Grid Layout Competence", issuer: "SkillSprint AI Board", date: "May 2026", hash: "SSA-1029-BC2" }
+    { title: "Personalized Roadmap: Full-Stack Architect", issuer: "SprintSkill AI Board", date: "June 2026", hash: "SSA-9482-AD3" },
+    { title: "HTML Semantic & Grid Layout Competence", issuer: "SprintSkill AI Board", date: "May 2026", hash: "SSA-1029-BC2" }
   ];
 
   const handleAddSkill = (e: React.FormEvent) => {

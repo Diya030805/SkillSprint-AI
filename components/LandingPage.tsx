@@ -114,7 +114,7 @@ export default function LandingPage({ onNavigate, isDarkMode, toggleTheme }: Lan
       name: "Alexander Reed",
       role: "Lead Frontend Engineer at Vercel",
       avatar: "https://picsum.photos/seed/alex/100/100",
-      quote: "SkillSprint AI has completely reimagined the learning path. The roadmap is incredibly specific and actionable, matching our team's hiring standards perfectly."
+      quote: "SprintSkill AI has completely reimagined the learning path. The roadmap is incredibly specific and actionable, matching our team's hiring standards perfectly."
     },
     {
       name: "Sophia Martinez",
@@ -127,7 +127,7 @@ export default function LandingPage({ onNavigate, isDarkMode, toggleTheme }: Lan
   const faqs = [
     {
       q: "How does the AI personalize my career roadmap?",
-      a: "SkillSprint AI evaluates your current technical background, target job title, and weekly commitment budget. Using advanced Gemini models, it orchestrates a sequential learning flow containing specific projects, key skill metrics, and curated resource guidelines."
+      a: "SprintSkill AI evaluates your current technical background, target job title, and weekly commitment budget. Using advanced Gemini models, it orchestrates a sequential learning flow containing specific projects, key skill metrics, and curated resource guidelines."
     },
     {
       q: "Can I connect third-party APIs or export my resume?",
@@ -156,7 +156,7 @@ export default function LandingPage({ onNavigate, isDarkMode, toggleTheme }: Lan
               <Sparkles className="w-5 h-5 text-white" />
             </div>
             <span className="font-sans font-bold tracking-tight text-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-              SkillSprint AI
+              SprintSkill AI
             </span>
           </div>
 
@@ -505,7 +505,7 @@ export default function LandingPage({ onNavigate, isDarkMode, toggleTheme }: Lan
           <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-indigo-500/10 blur-[80px] rounded-full pointer-events-none" />
           <div className="relative z-10 space-y-6 max-w-xl mx-auto">
             <h2 className="text-3xl font-bold tracking-tight">Ready to Accelerate Your Journey?</h2>
-            <p className="text-sm text-zinc-400">Join thousands of software engineers, product architects, and technical analysts charting clean, custom routes with SkillSprint AI today.</p>
+            <p className="text-sm text-zinc-400">Join thousands of software engineers, product architects, and technical analysts charting clean, custom routes with SprintSkill AI today.</p>
             <button 
               onClick={() => onNavigate("signup")}
               className="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-medium shadow-lg shadow-indigo-600/10 transition-all flex items-center gap-2 mx-auto"
@@ -523,9 +523,9 @@ export default function LandingPage({ onNavigate, isDarkMode, toggleTheme }: Lan
             <div className="w-6 h-6 rounded-lg bg-gradient-to-tr from-indigo-600 to-pink-500 flex items-center justify-center">
               <Sparkles className="w-3.5 h-3.5 text-white" />
             </div>
-            <span className="font-bold tracking-tight text-zinc-400">SkillSprint AI</span>
+            <span className="font-bold tracking-tight text-zinc-400">SprintSkill AI</span>
           </div>
-          <p className="text-zinc-500">&copy; 2026 SkillSprint AI. Crafted with Apple-level aesthetic principles.</p>
+          <p className="text-zinc-500">&copy; 2026 SprintSkill AI. Crafted with Apple-level aesthetic principles.</p>
           <div className="flex space-x-6">
             <a href="#" className="hover:text-zinc-300 transition-colors">Privacy</a>
             <a href="#" className="hover:text-zinc-300 transition-colors">Terms</a>

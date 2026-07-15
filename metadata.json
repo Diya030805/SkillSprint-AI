@@ -1,5 +1,5 @@
 {
-  "name": "SkillSprint AI",
+  "name": "SprintSkill AI",
   "description": "An AI-powered personalized learning and career roadmap platform.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

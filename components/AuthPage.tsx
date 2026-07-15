@@ -36,7 +36,7 @@ export default function AuthPage({ initialView, onNavigate, onLogin, isDarkMode 
         }
         // Save dummy user session
         const user = { email, name: email.split("@")[0] || "Scholar", isPremium: false };
-        localStorage.setItem("skillsprint_session", JSON.stringify(user));
+        localStorage.setItem("sprintskill_session", JSON.stringify(user));
         onLogin(user);
         onNavigate("dashboard");
       } else if (view === "signup") {
@@ -49,7 +49,7 @@ export default function AuthPage({ initialView, onNavigate, onLogin, isDarkMode 
           return;
         }
         const user = { email, name, isPremium: false };
-        localStorage.setItem("skillsprint_session", JSON.stringify(user));
+        localStorage.setItem("sprintskill_session", JSON.stringify(user));
         onLogin(user);
         onNavigate("dashboard");
       } else {
@@ -78,7 +78,7 @@ export default function AuthPage({ initialView, onNavigate, onLogin, isDarkMode 
             <Sparkles className="w-5.5 h-5.5 text-white" />
           </div>
           <span className="font-sans font-bold tracking-tight text-2xl bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-            SkillSprint AI
+            SprintSkill AI
           </span>
         </div>
       </div>

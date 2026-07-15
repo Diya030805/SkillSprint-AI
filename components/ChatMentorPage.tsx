@@ -13,7 +13,7 @@ export default function ChatMentorPage({ isDarkMode }: ChatMentorProps) {
     {
       id: 1,
       role: "model",
-      text: "Hello! I am your premium **SkillSprint AI Mentor**. How can I help accelerate your learning path, analyze a complex code concept, or review your professional career strategy today?",
+      text: "Hello! I am your premium **SprintSkill AI Mentor**. How can I help accelerate your learning path, analyze a complex code concept, or review your professional career strategy today?",
       time: "Just now"
     }
   ]);
@@ -235,7 +235,7 @@ export default function ChatMentorPage({ isDarkMode }: ChatMentorProps) {
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-extrabold">SkillSprint AI Mentor</span>
+              <span className="text-xs font-extrabold">SprintSkill AI Mentor</span>
               <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[8px] font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
                 ACTIVE
               </span>

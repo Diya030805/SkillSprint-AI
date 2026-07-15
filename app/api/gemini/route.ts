@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
       const formattedContents = [
         {
           role: "user",
-          parts: [{ text: "You are SkillSprint AI's Premium Career and Learning Mentor. You provide deep, actionable, clear guidance on coding, design, resume writing, career paths, and technical skills. Be concise, supportive, and structure your responses with markdown." }]
+          parts: [{ text: "You are SprintSkill AI's Premium Career and Learning Mentor. You provide deep, actionable, clear guidance on coding, design, resume writing, career paths, and technical skills. Be concise, supportive, and structure your responses with markdown." }]
         }
       ];
 
@@ -209,7 +209,7 @@ function getSimulatedResponse(action: string, payload: any) {
   if (action === "chat") {
     const msg = (payload.message || "").toLowerCase();
     if (msg.includes("hello") || msg.includes("hi")) {
-      return "Hello! I'm your premium **SkillSprint AI Mentor**. How can I help accelerate your career and learning roadmap today? You can ask me about custom roadmaps, code reviews, resume styling, or preparing for interviews!";
+      return "Hello! I'm your premium **SprintSkill AI Mentor**. How can I help accelerate your career and learning roadmap today? You can ask me about custom roadmaps, code reviews, resume styling, or preparing for interviews!";
     }
     if (msg.includes("roadmap") || msg.includes("career")) {
       return "An excellent career choice! I can generate custom, step-by-step milestones with curated projects, core skill trees, and pacing guidelines. Try typing your goal into the **AI Career Roadmap** tab!";
@@ -217,7 +217,7 @@ function getSimulatedResponse(action: string, payload: any) {
     if (msg.includes("react") || msg.includes("next")) {
       return "React & Next.js are leading the modern web ecosystem. Focus on understanding **Server Components vs Client Components**, state boundaries, and routing structures. Would you like to try a challenge in our **Practice Zone**?";
     }
-    return `### Guided Insight from SkillSprint AI Mentor
+    return `### Guided Insight from SprintSkill AI Mentor
 
 That's a fantastic question! To master this domain, here's an actionable, premium strategy to consider:
 
@@ -232,7 +232,7 @@ That's a fantastic question! To master this domain, here's an actionable, premiu
     const careerGoal = payload.careerGoal || "Full-Stack Developer";
     return {
       role: careerGoal,
-      description: `Premium, structured roadmap curated by SkillSprint AI to transform you into a high-caliber, industry-ready ${careerGoal}.`,
+      description: `Premium, structured roadmap curated by SprintSkill AI to transform you into a high-caliber, industry-ready ${careerGoal}.`,
       estimatedDuration: "6 Months (15 hrs/week)",
       skillTree: [
         { name: "Core Fundamentals", level: "Beginner", description: "Basic blocks and standard tooling." },

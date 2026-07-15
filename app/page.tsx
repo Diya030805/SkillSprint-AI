@@ -52,7 +52,7 @@ export default function Home() {
 
   // Hydrate user session from localStorage
   useEffect(() => {
-    const session = localStorage.getItem("skillsprint_session");
+    const session = localStorage.getItem("sprintskill_session");
     if (session) {
       try {
         const userData = JSON.parse(session);
@@ -82,7 +82,7 @@ export default function Home() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("skillsprint_session");
+    localStorage.removeItem("sprintskill_session");
     setUser(null);
     setView("landing");
     setMobileSidebarOpen(false);
@@ -95,7 +95,7 @@ export default function Home() {
   const handleUpgradeComplete = () => {
     if (user) {
       const upgradedUser = { ...user, isPremium: true };
-      localStorage.setItem("skillsprint_session", JSON.stringify(upgradedUser));
+      localStorage.setItem("sprintskill_session", JSON.stringify(upgradedUser));
       setUser(upgradedUser);
     }
   };
@@ -206,7 +206,7 @@ export default function Home() {
               <Sparkles className="w-4.5 h-4.5 text-white" />
             </motion.div>
             <span className="font-sans font-extrabold tracking-tight text-lg bg-gradient-to-r from-indigo-400 to-pink-500 bg-clip-text text-transparent">
-              SkillSprint AI
+              SprintSkill AI
             </span>
           </motion.div>
 
@@ -298,7 +298,7 @@ export default function Home() {
                   >
                     <Sparkles className="w-4.5 h-4.5 text-white" />
                   </motion.div>
-                  <span className={`font-extrabold text-lg ${isDarkMode ? 'text-white' : 'text-zinc-900'}`}>SkillSprint AI</span>
+                  <span className={`font-extrabold text-lg ${isDarkMode ? 'text-white' : 'text-zinc-900'}`}>SprintSkill AI</span>
                 </motion.div>
                 <button onClick={() => setMobileSidebarOpen(false)} className="text-zinc-500 hover:text-white">
                   <X className="w-5 h-5" />

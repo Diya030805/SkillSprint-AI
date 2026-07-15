@@ -31,7 +31,7 @@ export default function PremiumPage({ onUpgradeComplete }: PremiumPageProps) {
       setIsProcessing(false);
       setShowCheckoutModal(false);
       onUpgradeComplete();
-      alert("Upgrade Successful! Welcome to SkillSprint AI Premium.");
+      alert("Upgrade Successful! Welcome to SprintSkill AI Premium.");
     }, 1500);
   };
 

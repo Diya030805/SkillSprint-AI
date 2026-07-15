@@ -236,7 +236,7 @@ export default function ResumeBuilderPage() {
 
             {/* Subtle credit marker */}
             <p className="text-[8px] text-zinc-400 font-mono text-center mt-12 border-t pt-3">
-              CV Compiled & Optimised via SkillSprint AI Platform
+              CV Compiled & Optimised via SprintSkill AI Platform
             </p>
           </div>
         </div>
