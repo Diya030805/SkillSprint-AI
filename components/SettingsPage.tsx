@@ -1,20 +1,30 @@
 "use client";
-
-import React, { useState } from "react";
-import { Shield, Key, Eye, EyeOff, Check, Save } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Shield, Key, Eye, EyeOff, Check, Save, Volume2 } from "lucide-react";
+import { playSound } from "@/lib/audio";
 
 export default function SettingsPage() {
   const [geminiKey, setGeminiKey] = useState("••••••••••••••••••••••••••••");
   const [showKey, setShowKey] = useState(false);
   const [emailNotify, setEmailNotify] = useState(true);
   const [streakRemind, setStreakRemind] = useState(true);
+  const [soundEffects, setSoundEffects] = useState(true);
   const [activeTab, setActiveTab] = useState("Secrets");
 
   const [isSaved, setIsSaved] = useState(false);
 
+  useEffect(() => {
+    const soundEnabled = localStorage.getItem("sprintskill_sound_effects") !== "false";
+    setTimeout(() => {
+      setSoundEffects(soundEnabled);
+    }, 0);
+  }, []);
+
   const handleSaveSettings = (e: React.FormEvent) => {
     e.preventDefault();
+    localStorage.setItem("sprintskill_sound_effects", soundEffects ? "true" : "false");
     setIsSaved(true);
+    playSound("click");
     setTimeout(() => setIsSaved(false), 2000);
   };
 
@@ -36,7 +46,10 @@ export default function SettingsPage() {
             {["Secrets", "Preferences", "Security"].map((t) => (
               <button
                 key={t}
-                onClick={() => setActiveTab(t)}
+                onClick={() => {
+                  setActiveTab(t);
+                  playSound("transition");
+                }}
                 className={`px-3 py-2 rounded-lg text-xs font-semibold text-left transition-all ${
                   activeTab === t 
                     ? "bg-zinc-800 text-white" 
@@ -116,6 +129,29 @@ export default function SettingsPage() {
                       type="checkbox" 
                       checked={streakRemind} 
                       onChange={(e) => setStreakRemind(e.target.checked)}
+                      className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 bg-zinc-950 border-zinc-800 rounded cursor-pointer"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between p-3.5 rounded-xl bg-zinc-950/60 border border-zinc-900">
+                    <div>
+                      <span className="text-xs font-bold block text-zinc-200">UI Sound Effects</span>
+                      <p className="text-[10px] text-zinc-500">Enable subtle high-fidelity audio cues for clicks, actions, and page transitions.</p>
+                    </div>
+                    <input 
+                      type="checkbox" 
+                      checked={soundEffects} 
+                      onChange={(e) => {
+                        const nextVal = e.target.checked;
+                        setSoundEffects(nextVal);
+                        if (nextVal) {
+                          localStorage.setItem("sprintskill_sound_effects", "true");
+                          playSound("click");
+                        } else {
+                          playSound("click");
+                          localStorage.setItem("sprintskill_sound_effects", "false");
+                        }
+                      }}
                       className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 bg-zinc-950 border-zinc-800 rounded cursor-pointer"
                     />
                   </div>

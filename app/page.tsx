@@ -17,6 +17,7 @@ import PremiumPage from "@/components/PremiumPage";
 import SettingsPage from "@/components/SettingsPage";
 import NotFoundPage from "@/components/NotFoundPage";
 import NotificationCenter from "@/components/NotificationCenter";
+import { playSound } from "@/lib/audio";
 
 import { 
   Sparkles, 
@@ -53,18 +54,23 @@ export default function Home() {
   // Hydrate user session from localStorage
   useEffect(() => {
     const session = localStorage.getItem("sprintskill_session");
-    if (session) {
-      try {
-        const userData = JSON.parse(session);
-        // Defer state updates to avoid synchronous cascading renders linter error
-        setTimeout(() => {
+    const savedTheme = localStorage.getItem("sprintskill_theme");
+    
+    // Defer state updates to avoid synchronous cascading renders linter error
+    setTimeout(() => {
+      if (session) {
+        try {
+          const userData = JSON.parse(session);
           setUser(userData);
           setView("dashboard");
-        }, 0);
-      } catch (e) {
-        console.error("Session hydration failed", e);
+        } catch (e) {
+          console.error("Session hydration failed", e);
+        }
       }
-    }
+      if (savedTheme !== null) {
+        setIsDarkMode(savedTheme === "dark");
+      }
+    }, 0);
 
     // Tick UTC clock
     const updateTime = () => {
@@ -81,6 +87,19 @@ export default function Home() {
     setView("dashboard");
   };
 
+  const handleGuestLogin = () => {
+    const demoGuestUser = {
+      name: "Demo Guest",
+      email: "guest@sprintskill.demo",
+      isPremium: false,
+      isGuest: true
+    };
+    localStorage.setItem("sprintskill_session", JSON.stringify(demoGuestUser));
+    setUser(demoGuestUser);
+    setView("dashboard");
+    playSound("transition");
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("sprintskill_session");
     setUser(null);
@@ -89,7 +108,9 @@ export default function Home() {
   };
 
   const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
+    const nextMode = !isDarkMode;
+    setIsDarkMode(nextMode);
+    localStorage.setItem("sprintskill_theme", nextMode ? "dark" : "light");
   };
 
   const handleUpgradeComplete = () => {
@@ -153,6 +174,7 @@ export default function Home() {
           onNavigate={(target) => setView(target)} 
           isDarkMode={isDarkMode} 
           toggleTheme={toggleTheme} 
+          onGuestLogin={handleGuestLogin}
         />
       );
     }
@@ -217,7 +239,10 @@ export default function Home() {
               return (
                 <button
                   key={item.id}
-                  onClick={() => setView(item.id)}
+                  onClick={() => {
+                    setView(item.id);
+                    playSound("transition");
+                  }}
                   className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-left transition-all ${
                     isActive 
                       ? "bg-white/10 text-white border border-white/10" 
@@ -314,6 +339,7 @@ export default function Home() {
                       onClick={() => {
                         setView(item.id);
                         setMobileSidebarOpen(false);
+                        playSound("transition");
                       }}
                       className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-left transition-all ${
                         isActive 
@@ -344,7 +370,11 @@ export default function Home() {
                   </div>
                   <div>
                     <span className={`text-[11px] font-bold block ${isDarkMode ? 'text-zinc-300' : 'text-zinc-800'}`}>{user?.name || "Scholar"}</span>
-                    <span className="text-[8px] font-extrabold text-zinc-500 uppercase">BASIC</span>
+                    {user?.isGuest ? (
+                      <span className="text-[8px] font-extrabold text-amber-500 uppercase bg-amber-500/10 px-1 rounded-sm border border-amber-500/10">DEMO GUEST</span>
+                    ) : (
+                      <span className="text-[8px] font-extrabold text-zinc-500 uppercase">{user?.isPremium ? "PREMIUM" : "BASIC"}</span>
+                    )}
                   </div>
                 </div>
                 <button onClick={handleLogout} className="text-zinc-500 hover:text-red-400">

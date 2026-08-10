@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { FileText, Sparkles, Loader2, RefreshCw, Copy, Check, Info, FileDown } from "lucide-react";
+import { jsPDF } from "jspdf";
+import { playSound } from "@/lib/audio";
 
 export default function ResumeBuilderPage() {
   const [name, setName] = useState("John Doe");
@@ -13,6 +15,7 @@ export default function ResumeBuilderPage() {
   
   const [template, setTemplate] = useState("Minimalist");
   const [isLoading, setIsLoading] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [suggestions, setSuggestions] = useState<string[] | null>(null);
   const [rewrittenText, setRewrittenText] = useState("");
   const [copied, setCopied] = useState(false);
@@ -61,8 +64,128 @@ export default function ResumeBuilderPage() {
     setRewrittenText("");
   };
 
-  const triggerMockDownload = () => {
-    alert("Export Successful! Standard high-contrast PDF compilation complete.");
+  const exportToPdf = () => {
+    playSound("transition");
+    setIsExporting(true);
+
+    try {
+      // Configuration based on current template
+      let fontName = "helvetica";
+      let primaryColor = { r: 31, g: 41, b: 55 }; // Dark charcoal
+      let accentColor = { r: 79, g: 70, b: 229 }; // Indigo accent
+      let bodyColor = { r: 75, g: 85, b: 99 }; // Muted gray
+
+      if (template === "Elegant Serif") {
+        fontName = "times";
+        primaryColor = { r: 41, g: 37, b: 36 }; // Espresso
+        accentColor = { r: 120, g: 113, b: 108 }; // Stone
+        bodyColor = { r: 87, g: 83, b: 78 };
+      } else if (template === "Tech Mono") {
+        fontName = "courier";
+        primaryColor = { r: 9, g: 9, b: 11 }; // Near black
+        accentColor = { r: 99, g: 102, b: 241 }; // Purple/Indigo
+        bodyColor = { r: 113, g: 113, b: 122 };
+      }
+
+      // Create jsPDF instance
+      const doc = new jsPDF({
+        orientation: "portrait",
+        unit: "mm",
+        format: "a4",
+      });
+
+      // Page dimensions & margins
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const margin = 20;
+      const contentWidth = pageWidth - margin * 2; // 170mm
+
+      let yPos = margin;
+
+      // Helper to draw horizontal line
+      const drawDivider = (y: number, colorRGB: { r: number; g: number; b: number }, height: number = 0.2) => {
+        doc.setDrawColor(colorRGB.r, colorRGB.g, colorRGB.b);
+        doc.setLineWidth(height);
+        doc.line(margin, y, margin + contentWidth, y);
+      };
+
+      // Name
+      doc.setFont(fontName, "bold");
+      doc.setFontSize(22);
+      doc.setTextColor(primaryColor.r, primaryColor.g, primaryColor.b);
+      doc.text(name || "John Doe", margin, yPos);
+      yPos += 7;
+
+      // Target Job Title
+      doc.setFont(fontName, "bold");
+      doc.setFontSize(11);
+      doc.setTextColor(accentColor.r, accentColor.g, accentColor.b);
+      doc.text((title || "Full-Stack React Architect").toUpperCase(), margin, yPos);
+      yPos += 5;
+
+      // Contact Details
+      doc.setFont(fontName, "normal");
+      doc.setFontSize(8.5);
+      doc.setTextColor(140, 140, 140);
+      const contactInfo = "diyaghosh030805@gmail.com  |  GitHub  |  LinkedIn  |  SprintSkill Certified";
+      doc.text(contactInfo, margin, yPos);
+      yPos += 4;
+
+      // Under-header divider
+      yPos += 2;
+      drawDivider(yPos, accentColor, 0.5);
+      yPos += 8;
+
+      // Section Header: Professional Experience
+      doc.setFont(fontName, "bold");
+      doc.setFontSize(10.5);
+      doc.setTextColor(accentColor.r, accentColor.g, accentColor.b);
+      doc.text("PROFESSIONAL EXPERIENCE", margin, yPos);
+      yPos += 5.5;
+
+      // Job Title & Date Row
+      doc.setFont(fontName, "bold");
+      doc.setFontSize(9.5);
+      doc.setTextColor(primaryColor.r, primaryColor.g, primaryColor.b);
+      doc.text("Senior Frontend Architect", margin, yPos);
+      
+      doc.setFont(fontName, "normal");
+      doc.setFontSize(8.5);
+      doc.setTextColor(120, 120, 120);
+      doc.text("Present", margin + contentWidth, yPos, { align: "right" });
+      yPos += 5.5;
+
+      // Wrapped Experience bullet
+      doc.setFont(fontName, "normal");
+      doc.setFontSize(9);
+      doc.setTextColor(bodyColor.r, bodyColor.g, bodyColor.b);
+      
+      const wrappedText = doc.splitTextToSize(experience || "No experience bullets written yet.", contentWidth);
+      doc.text(wrappedText, margin, yPos);
+      
+      const textLinesCount = wrappedText.length;
+      yPos += textLinesCount * 4.5 + 8;
+
+      // Footer
+      const footerY = pageHeight - margin;
+      drawDivider(footerY - 6, { r: 230, g: 230, b: 230 }, 0.2);
+
+      doc.setFont(fontName, "italic");
+      doc.setFontSize(7.5);
+      doc.setTextColor(150, 150, 150);
+      doc.text("CV Compiled & Optimised via SprintSkill AI Platform", pageWidth / 2, footerY - 2, { align: "center" });
+
+      // Save PDF
+      const fileName = `${(name || "Resume").trim().replace(/\s+/g, "_")}_CV.pdf`;
+      doc.save(fileName);
+    } catch (error) {
+      console.error("PDF generation failed:", error);
+      alert("Something went wrong compiling the PDF. Please try again.");
+    } finally {
+      setTimeout(() => {
+        setIsExporting(false);
+      }, 1000);
+    }
   };
 
   return (
@@ -76,10 +199,19 @@ export default function ResumeBuilderPage() {
         </div>
 
         <button 
-          onClick={triggerMockDownload}
-          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-indigo-600/10 cursor-pointer shrink-0"
+          onClick={exportToPdf}
+          disabled={isExporting}
+          className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-indigo-700 text-white rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-md shadow-indigo-600/10 cursor-pointer shrink-0"
         >
-          <FileDown className="w-4 h-4" /> Export CV PDF
+          {isExporting ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" /> Compiling PDF...
+            </>
+          ) : (
+            <>
+              <FileDown className="w-4 h-4" /> Export CV PDF
+            </>
+          )}
         </button>
       </div>
 

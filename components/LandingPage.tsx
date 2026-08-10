@@ -26,9 +26,10 @@ interface LandingPageProps {
   onNavigate: (view: string) => void;
   isDarkMode: boolean;
   toggleTheme: () => void;
+  onGuestLogin: () => void;
 }
 
-export default function LandingPage({ onNavigate, isDarkMode, toggleTheme }: LandingPageProps) {
+export default function LandingPage({ onNavigate, isDarkMode, toggleTheme, onGuestLogin }: LandingPageProps) {
   const [demoGoal, setDemoGoal] = useState("");
   const [isDemoGenerating, setIsDemoGenerating] = useState(false);
   const [demoRoadmap, setDemoRoadmap] = useState<any>(null);
@@ -168,6 +169,24 @@ export default function LandingPage({ onNavigate, isDarkMode, toggleTheme }: Lan
           </nav>
 
           <div className="flex items-center space-x-4">
+            {/* Guest Mode Toggle Switch */}
+            <div className="flex items-center gap-2 border-r pr-4 border-zinc-200 dark:border-zinc-800">
+              <span className={`text-[10px] font-extrabold uppercase tracking-widest ${isDarkMode ? 'text-zinc-500' : 'text-zinc-400'}`}>Guest Mode</span>
+              <button
+                onClick={() => {
+                  onGuestLogin();
+                }}
+                className="relative w-9 h-5 rounded-full bg-zinc-800/80 border border-zinc-700 p-0.5 cursor-pointer flex items-center transition-all hover:border-indigo-500"
+                title="Enter read-only guest mode"
+              >
+                <motion.div 
+                  className="w-3.5 h-3.5 rounded-full bg-indigo-500"
+                  layout
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                />
+              </button>
+            </div>
+
             <button 
               onClick={toggleTheme}
               className={`p-2 rounded-lg border transition-all ${isDarkMode ? 'border-zinc-800 hover:bg-zinc-900 text-zinc-400' : 'border-zinc-200 hover:bg-zinc-100 text-zinc-600'}`}
@@ -224,6 +243,31 @@ export default function LandingPage({ onNavigate, isDarkMode, toggleTheme }: Lan
             >
               Try Interactive Demo
             </a>
+          </div>
+
+          {/* Guest Mode Hero Toggle */}
+          <div className="mt-8 flex items-center justify-center gap-3">
+            <div className={`flex items-center gap-3 px-4 py-2 rounded-2xl border transition-all ${isDarkMode ? 'bg-zinc-900/30 border-zinc-900' : 'bg-white border-zinc-200'} shadow-sm`}>
+              <span className={`text-xs font-bold ${isDarkMode ? 'text-zinc-400' : 'text-zinc-600'}`}>
+                🔑 Explore without an account
+              </span>
+              <button
+                onClick={() => {
+                  onGuestLogin();
+                }}
+                className="relative w-10 h-6 rounded-full p-1 bg-zinc-800 border border-zinc-700 cursor-pointer flex items-center transition-all hover:border-indigo-500"
+                title="Explore dashboard with read-only demo session"
+              >
+                <motion.div 
+                  className="w-4 h-4 rounded-full bg-indigo-500"
+                  layout
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                />
+              </button>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded-full border border-indigo-500/20">
+                GUEST MODE
+              </span>
+            </div>
           </div>
         </motion.div>
       </section>
