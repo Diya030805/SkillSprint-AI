@@ -17,6 +17,7 @@ import PremiumPage from "@/components/PremiumPage";
 import SettingsPage from "@/components/SettingsPage";
 import NotFoundPage from "@/components/NotFoundPage";
 import NotificationCenter from "@/components/NotificationCenter";
+import { DailyNotificationWatcher } from "@/components/DailyNotificationSystem";
 import { playSound } from "@/lib/audio";
 
 import { 
@@ -488,6 +489,9 @@ export default function Home() {
             {renderActiveTab()}
           </div>
         </main>
+        
+        {/* Daily Warning Push Notification Scheduler & Handler */}
+        <DailyNotificationWatcher onNavigateTab={(tab) => setView(tab)} />
       </div>
 
     </div>

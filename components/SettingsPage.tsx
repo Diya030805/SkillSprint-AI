@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Shield, Key, Eye, EyeOff, Check, Save, Volume2 } from "lucide-react";
 import { playSound } from "@/lib/audio";
+import { DailyNotificationSettings } from "@/components/DailyNotificationSystem";
 
 export default function SettingsPage() {
   const [geminiKey, setGeminiKey] = useState("••••••••••••••••••••••••••••");
@@ -155,6 +156,10 @@ export default function SettingsPage() {
                       className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 bg-zinc-950 border-zinc-800 rounded cursor-pointer"
                     />
                   </div>
+                </div>
+
+                <div className="pt-4 border-t border-zinc-800/40">
+                  <DailyNotificationSettings isDarkMode={true} />
                 </div>
               </div>
             )}

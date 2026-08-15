@@ -28,6 +28,7 @@ import {
   Milestone
 } from "lucide-react";
 import { playSound } from "@/lib/audio";
+import { DailyNotificationSettings, logUserActivity } from "@/components/DailyNotificationSystem";
 
 interface DashboardPageProps {
   user: any;
@@ -61,6 +62,7 @@ export default function DashboardPage({ user, onNavigateTab, isDarkMode }: Dashb
     setWeeklyGoals(
       weeklyGoals.map((g) => (g.id === id ? { ...g, checked: !g.checked } : g))
     );
+    logUserActivity();
   };
 
   const handleAddGoal = (e: React.FormEvent) => {
@@ -72,6 +74,70 @@ export default function DashboardPage({ user, onNavigateTab, isDarkMode }: Dashb
     ]);
     setNewGoalText("");
     setShowAddGoal(false);
+    logUserActivity();
+  };
+
+  // Daily Study Time Goal state and persistence
+  const [studyGoal, setStudyGoal] = useState<number>(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("sprintskill_daily_study_goal_minutes");
+      return saved ? parseInt(saved, 10) : 30;
+    }
+    return 30;
+  });
+
+  const [studyAccumulated, setStudyAccumulated] = useState<number>(() => {
+    if (typeof window !== "undefined") {
+      const todayStr = new Date().toISOString().split("T")[0];
+      const saved = localStorage.getItem(`sprintskill_daily_study_accumulated_minutes_${todayStr}`);
+      return saved ? parseInt(saved, 10) : 0;
+    }
+    return 0;
+  });
+
+  const checkGoalMet = (accumulated: number, goal: number) => {
+    const todayStr = new Date().toISOString().split("T")[0];
+    if (accumulated >= goal) {
+      const notifiedKey = `sprintskill_study_goal_notified_${todayStr}`;
+      const alreadyNotified = localStorage.getItem(notifiedKey) === "true";
+      
+      if (!alreadyNotified) {
+        localStorage.setItem(notifiedKey, "true");
+        
+        // Dispatch custom event to push alert to the Bell Notification center list in real-time
+        const eventDetail = {
+          type: "streak",
+          title: "Daily Study Goal Achieved! 🏆",
+          desc: `Outstanding work! You have reached your daily study goal of ${goal} minutes today.`
+        };
+        
+        window.dispatchEvent(new CustomEvent("sprintskill_new_notification", {
+          detail: eventDetail
+        }));
+      }
+    }
+  };
+
+  const handleAddStudyMinutes = (mins: number) => {
+    const todayStr = new Date().toISOString().split("T")[0];
+    const newAccumulated = studyAccumulated + mins;
+    setStudyAccumulated(newAccumulated);
+    localStorage.setItem(`sprintskill_daily_study_accumulated_minutes_${todayStr}`, newAccumulated.toString());
+    
+    // Log user activity (streak preservation)
+    logUserActivity();
+
+    // Check if goal is met
+    checkGoalMet(newAccumulated, studyGoal);
+  };
+
+  const handleUpdateGoal = (newGoal: number) => {
+    if (newGoal < 1) return;
+    setStudyGoal(newGoal);
+    localStorage.setItem("sprintskill_daily_study_goal_minutes", newGoal.toString());
+    
+    // Check if current progress meets or exceeds new goal
+    checkGoalMet(studyAccumulated, newGoal);
   };
 
   // Focus Session Timer state
@@ -79,6 +145,12 @@ export default function DashboardPage({ user, onNavigateTab, isDarkMode }: Dashb
   const [timerPreset, setTimerPreset] = useState(1500);
   const [timerRunning, setTimerRunning] = useState(false);
   const [timerSessionCompleted, setTimerSessionCompleted] = useState(false);
+
+  // Use a ref for the completion handler to decouple timer interval from progress state changes
+  const onSessionCompletedRef = React.useRef<(mins: number) => void>(() => {});
+  useEffect(() => {
+    onSessionCompletedRef.current = handleAddStudyMinutes;
+  });
 
   useEffect(() => {
     let interval: any = null;
@@ -91,6 +163,11 @@ export default function DashboardPage({ user, onNavigateTab, isDarkMode }: Dashb
             try {
               playSound("transition");
             } catch (err) {}
+            
+            // Automatically log completed session minutes to today's study goal via stable ref
+            const presetMinutes = Math.round(timerPreset / 60);
+            onSessionCompletedRef.current(presetMinutes);
+
             // Also alert standard as requested
             alert("Focus Session completed! Time to take a short break.");
             return 0;
@@ -102,7 +179,7 @@ export default function DashboardPage({ user, onNavigateTab, isDarkMode }: Dashb
       clearInterval(interval);
     }
     return () => clearInterval(interval);
-  }, [timerRunning]);
+  }, [timerRunning, timerPreset]);
 
   const handleStartPauseTimer = () => {
     playSound("click");
@@ -110,6 +187,7 @@ export default function DashboardPage({ user, onNavigateTab, isDarkMode }: Dashb
     if (timerSessionCompleted) {
       setTimerSessionCompleted(false);
     }
+    logUserActivity();
   };
 
   const handleResetTimer = () => {
@@ -225,6 +303,8 @@ export default function DashboardPage({ user, onNavigateTab, isDarkMode }: Dashb
       },
       ...prev
     ]);
+
+    logUserActivity();
   };
 
   const filteredMilestones = selectedCourseFilter === "All" 
@@ -445,6 +525,9 @@ export default function DashboardPage({ user, onNavigateTab, isDarkMode }: Dashb
               })}
             </div>
           </div>
+
+          {/* Daily Commitment Reminder Settings Card */}
+          <DailyNotificationSettings isDarkMode={isDarkMode} />
 
           {/* Learning Milestones Timeline Widget */}
           <div className={`p-6 rounded-3xl border backdrop-blur-md shadow-xl transition-all duration-300 ${isDarkMode ? 'bg-white/5 border-white/10' : 'bg-white/50 border border-zinc-200/80 shadow-sm'}`}>
@@ -735,6 +818,99 @@ export default function DashboardPage({ user, onNavigateTab, isDarkMode }: Dashb
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
                 </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Daily Study Goal Card */}
+          <div className={`p-6 rounded-3xl border backdrop-blur-md shadow-xl transition-all duration-300 ${isDarkMode ? 'bg-white/5 border-white/10' : 'bg-white/50 border border-zinc-200/80 shadow-sm'}`}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-sm font-bold tracking-tight flex items-center gap-2">
+                <Clock className="w-4 h-4 text-emerald-400" /> Daily Study Goal
+              </h3>
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={() => handleUpdateGoal(Math.max(5, studyGoal - 5))}
+                  className={`w-6 h-6 rounded-lg border flex items-center justify-center text-xs font-extrabold transition-all ${isDarkMode ? 'border-white/10 hover:bg-white/5 text-zinc-400' : 'border-zinc-200 hover:bg-zinc-100 text-zinc-600'}`}
+                  title="Decrease goal by 5 mins"
+                >
+                  -
+                </button>
+                <span className="text-xs font-bold font-mono text-zinc-200 min-w-[28px] text-center">
+                  {studyGoal}m
+                </span>
+                <button
+                  onClick={() => handleUpdateGoal(studyGoal + 5)}
+                  className={`w-6 h-6 rounded-lg border flex items-center justify-center text-xs font-extrabold transition-all ${isDarkMode ? 'border-white/10 hover:bg-white/5 text-zinc-400' : 'border-zinc-200 hover:bg-zinc-100 text-zinc-600'}`}
+                  title="Increase goal by 5 mins"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            {/* Progress Visualization */}
+            <div className="space-y-3.5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <span className="text-xs text-zinc-400">Today&apos;s Progress</span>
+                  <div className="text-lg font-extrabold font-mono text-zinc-200 mt-0.5">
+                    {studyAccumulated} <span className="text-xs text-zinc-500 font-normal">/ {studyGoal} mins</span>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs text-zinc-400">Completed</span>
+                  <div className="text-lg font-extrabold font-mono text-emerald-400 mt-0.5">
+                    {Math.min(100, Math.round((studyAccumulated / studyGoal) * 100))}%
+                  </div>
+                </div>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="w-full h-2 bg-zinc-950 rounded-full overflow-hidden">
+                <motion.div
+                  className={`h-full rounded-full transition-all duration-500 ${
+                    studyAccumulated >= studyGoal
+                      ? "bg-gradient-to-r from-emerald-500 to-teal-400"
+                      : "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500"
+                  }`}
+                  initial={{ width: "0%" }}
+                  animate={{ width: `${Math.min(100, (studyAccumulated / studyGoal) * 100)}%` }}
+                />
+              </div>
+
+              {/* Celebration or motivation text */}
+              {studyAccumulated >= studyGoal ? (
+                <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-center">
+                  <span className="text-[10px] font-bold text-emerald-400 block">🏆 Goal Achieved!</span>
+                  <span className="text-[9px] text-zinc-400 block">Incredible discipline! Keep pushing your boundaries.</span>
+                </div>
+              ) : (
+                <div className="text-center text-[10px] text-zinc-500 italic">
+                  Focus sessions or manual quick logging will increase your progress.
+                </div>
+              )}
+
+              {/* Quick Logging Options */}
+              <div className="pt-2 border-t border-zinc-800/40">
+                <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-wider block mb-2">
+                  Quick Log Study Time
+                </span>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {[5, 15, 30, 45].map((mins) => (
+                    <button
+                      key={mins}
+                      onClick={() => handleAddStudyMinutes(mins)}
+                      className={`py-1 rounded-lg text-[9px] font-extrabold border transition-all cursor-pointer ${
+                        isDarkMode
+                          ? "bg-white/5 border-white/5 hover:border-white/10 hover:bg-white/10 text-zinc-300"
+                          : "bg-zinc-50 border-zinc-200 hover:bg-zinc-100 text-zinc-600"
+                      }`}
+                    >
+                      +{mins}m
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
