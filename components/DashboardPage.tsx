@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 import { 
   Sparkles, 
   Flame, 
@@ -44,6 +44,7 @@ export default function DashboardPage({ user, onNavigateTab, isDarkMode }: Dashb
   ]);
   const [newGoalText, setNewGoalText] = useState("");
   const [showAddGoal, setShowAddGoal] = useState(false);
+  const [fabOpen, setFabOpen] = useState(false);
 
   const [skills, setSkills] = useState<any[]>([
     { name: "TypeScript", progress: 85, level: "Advanced" },
@@ -983,6 +984,90 @@ export default function DashboardPage({ user, onNavigateTab, isDarkMode }: Dashb
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Floating Action Button (FAB) for Dashboard Quick Links */}
+      <div className="fixed bottom-6 right-6 z-50">
+        <AnimatePresence>
+          {fabOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: 15, scale: 0.9 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 15, scale: 0.9 }}
+              className="absolute bottom-16 right-0 mb-2 flex flex-col items-end gap-2.5 min-w-[210px]"
+            >
+              <div className={`p-2.5 rounded-2xl shadow-2xl border text-left flex flex-col gap-1 ${
+                isDarkMode 
+                  ? "bg-zinc-950/95 border-zinc-800 backdrop-blur-md" 
+                  : "bg-white/95 border-zinc-200/80 backdrop-blur-md shadow-lg"
+              }`}>
+                <span className="text-[9px] font-extrabold text-indigo-400 uppercase tracking-widest px-2.5 py-1 block border-b border-zinc-900/40">
+                  Quick Actions Ledger
+                </span>
+
+                <button
+                  onClick={() => {
+                    playSound("transition");
+                    onNavigateTab("roadmap");
+                    setFabOpen(false);
+                  }}
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-left text-xs font-semibold transition-all hover:scale-[1.02] cursor-pointer ${
+                    isDarkMode ? "text-zinc-200 hover:bg-white/5" : "text-zinc-700 hover:bg-zinc-100"
+                  }`}
+                >
+                  <Compass className="w-4 h-4 text-indigo-400" />
+                  <span>New Roadmap</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    playSound("transition");
+                    onNavigateTab("practice");
+                    setFabOpen(false);
+                  }}
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-left text-xs font-semibold transition-all hover:scale-[1.02] cursor-pointer ${
+                    isDarkMode ? "text-zinc-200 hover:bg-white/5" : "text-zinc-700 hover:bg-zinc-100"
+                  }`}
+                >
+                  <Code className="w-4 h-4 text-amber-400" />
+                  <span>New Practice Session</span>
+                </button>
+
+                <button
+                  onClick={() => {
+                    playSound("transition");
+                    onNavigateTab("resume");
+                    setFabOpen(false);
+                  }}
+                  className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-left text-xs font-semibold transition-all hover:scale-[1.02] cursor-pointer ${
+                    isDarkMode ? "text-zinc-200 hover:bg-white/5" : "text-zinc-700 hover:bg-zinc-100"
+                  }`}
+                >
+                  <FileText className="w-4 h-4 text-emerald-400" />
+                  <span>New Resume Draft</span>
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Main Floating Trigger Button */}
+        <motion.button
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => {
+            playSound("click");
+            setFabOpen(!fabOpen);
+          }}
+          className="w-12 h-12 rounded-full bg-gradient-to-r from-indigo-600 via-indigo-500 to-pink-500 hover:from-indigo-500 hover:to-pink-400 text-white flex items-center justify-center shadow-xl shadow-indigo-600/30 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+          <motion.div
+            animate={{ rotate: fabOpen ? 135 : 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          >
+            <Plus className="w-6 h-6 stroke-[2.5]" />
+          </motion.div>
+        </motion.button>
       </div>
 
     </div>

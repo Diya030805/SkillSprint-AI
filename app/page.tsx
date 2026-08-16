@@ -51,6 +51,8 @@ export default function Home() {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState<boolean>(false);
   const [globalSearch, setGlobalSearch] = useState<string>("");
   const [utcTime, setUtcTime] = useState<string>("");
+  const [hoveredItemId, setHoveredItemId] = useState<string | null>(null);
+  const [mobileHoveredItemId, setMobileHoveredItemId] = useState<string | null>(null);
 
   // Hydrate user session from localStorage
   useEffect(() => {
@@ -244,14 +246,26 @@ export default function Home() {
                     setView(item.id);
                     playSound("transition");
                   }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-left transition-all ${
+                  onMouseEnter={() => setHoveredItemId(item.id)}
+                  onMouseLeave={() => setHoveredItemId(null)}
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-left transition-all relative ${
                     isActive 
                       ? "bg-white/10 text-white border border-white/10" 
-                      : "text-zinc-400 hover:text-white hover:bg-white/5"
+                      : "text-zinc-400 hover:text-white border border-transparent"
                   }`}
                 >
-                  {item.icon}
-                  <span>{item.label}</span>
+                  {/* Subtle Sliding Hover Background Highlight */}
+                  {hoveredItemId === item.id && (
+                    <motion.div
+                      layoutId="sidebar-hover-highlight"
+                      className="absolute inset-0 bg-white/5 rounded-lg -z-10"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+                  <span className="relative z-10 flex items-center gap-3 w-full">
+                    {item.icon}
+                    <span>{item.label}</span>
+                  </span>
                 </button>
               );
             })}
@@ -342,14 +356,26 @@ export default function Home() {
                         setMobileSidebarOpen(false);
                         playSound("transition");
                       }}
-                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-left transition-all ${
+                      onMouseEnter={() => setMobileHoveredItemId(item.id)}
+                      onMouseLeave={() => setMobileHoveredItemId(null)}
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-xs font-semibold text-left transition-all relative ${
                         isActive 
                           ? isDarkMode ? "bg-white/10 text-white border border-white/10" : "bg-zinc-900/10 text-zinc-900 border border-zinc-900/5"
-                          : isDarkMode ? "text-zinc-400 hover:text-zinc-100 hover:bg-white/5" : "text-zinc-500 hover:text-zinc-900 hover:bg-zinc-900/5"
+                          : isDarkMode ? "text-zinc-400 hover:text-zinc-100 border border-transparent" : "text-zinc-500 hover:text-zinc-900 border border-transparent"
                       }`}
                     >
-                      {item.icon}
-                      <span>{item.label}</span>
+                      {/* Subtle Sliding Hover Background Highlight for Mobile */}
+                      {mobileHoveredItemId === item.id && (
+                        <motion.div
+                          layoutId="mobile-sidebar-hover-highlight"
+                          className={`absolute inset-0 rounded-lg -z-10 ${isDarkMode ? "bg-white/5" : "bg-zinc-900/5"}`}
+                          transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                      <span className="relative z-10 flex items-center gap-3 w-full">
+                        {item.icon}
+                        <span>{item.label}</span>
+                      </span>
                     </button>
                   );
                 })}
